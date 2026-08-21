@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pull Request Simulation</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --accent-color: #1f6feb;
+            --success-color: #238636;
+            --merged-color: #8957e5;
+            --box-bg: #161b22;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--box-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 24px;
+        }
+
+        .pr-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 8px 0;
+        }
+
+        .pr-number {
+            color: #8b949e;
+            font-weight: 300;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 2em;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        .badge-open { background-color: var(--success-color); }
+        .badge-merged { background-color: var(--merged-color); }
+
+        .branch-info {
+            font-family: monospace;
+            font-size: 12px;
+            color: #8b949e;
+            margin-top: 12px;
+        }
+
+        .branch-name {
+            background-color: #21262d;
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #58a6ff;
+        }
+
+        .timeline-item {
+            border-left: 2px solid var(--border-color);
+            margin-left: 16px;
+            padding-left: 24px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -7px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+        }
+
+        .file-diff {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .file-header {
+            background-color: #161b22;
+            padding: 8px 16px;
+            font-family: monospace;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .diff-line {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 2px 16px;
+            white-space: pre-wrap;
+        }
+
+        .diff-added {
+            background-color: rgba(46, 160, 67, 0.15);
+            color: #3fb950;
+        }
+
+        .diff-removed {
+            background-color: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+        }
+
+        .merge-box {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 20px;
+            background-color: #0d1117;
+        }
+
+        .btn {
+            background-color: var(--success-color);
+            color: white;
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #2ea44f;
+        }
+
+        .btn:disabled {
+            background-color: #21262d;
+            color: #8b949e;
+            cursor: not-allowed;
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="pr-header">
+        <h1>Feature: Add Login Page <span class="pr-number">#42</span></h1>
+        <div>
+            <span id="prBadge" class="badge badge-open">Open</span>
+            <span class="branch-info">
+                <span class="branch-name">main</span> ← <span class="branch-name">feature/login</span>
+            </span>
+        </div>
+    </div>
+
+    <div class="timeline-item">
+        <strong>developer-one</strong> committed 2 hours ago
+        <div class="file-diff">
+            <div class="file-header">src/auth.js</div>
+            <div class="diff-line diff-removed">- function checkAuth() { return false; }</div>
+            <div class="diff-line diff-added">+ function loginUser(email, password) {</div>
+            <div class="diff-line diff-added">+     return fetch('/api/login', { method: 'POST' });</div>
+            <div class="diff-line diff-added">+ }</div>
+        </div>
+    </div>
+
+    <div id="mergeSection" class="merge-box">
+        <div id="mergeStatus" class="status-text" style="color: #3fb950;">This branch has no conflicts with the base branch.</div>
+        <button id="mergeBtn" class="btn" onclick="simulateMerge()">Merge pull request</button>
+    </div>
+</div>
+
+<script>
+    function simulateMerge() {
+        const badge = document.getElementById('prBadge');
+        const button = document.getElementById('mergeBtn');
+        const status = document.getElementById('mergeStatus');
+
+        badge.textContent = 'Merged';
+        badge.className = 'badge badge-merged';
+
+        status.textContent = 'Pull request successfully merged and closed';
+        status.style.color = '#a371f7';
+
+        button.disabled = true;
+        button.textContent = 'Merged';
+    </script>
+</body>
+</html>
